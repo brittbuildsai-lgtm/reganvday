@@ -1,0 +1,505 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">System Error Heart</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <style vid="6">
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Tahoma:wght@400;700&display=swap');
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #0d1117;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        
+        .c-keyword { color: #cc7832; }
+        .c-string { color: #6a8759; }
+        .c-comment { color: #808080; }
+        .c-prop { color: #9876aa; }
+        .c-var { color: #a9b7c6; }
+        .c-def { color: #ffc66d; }
+        .c-num { color: #6897bb; }
+
+        
+        .error-window {
+            position: absolute;
+            width: 280px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #dfdfdf;
+            border-left: 2px solid #dfdfdf;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Tahoma', sans-serif;
+            opacity: 1;
+        }
+
+        .window-inner {
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2px;
+        }
+
+        .title-bar {
+            background-color: #000080; 
+            background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+            color: white;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            cursor: default;
+        }
+
+        .close-btn {
+            width: 16px;
+            height: 16px;
+            background-color: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: black;
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .close-btn:active {
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            transform: translate(1px, 1px);
+        }
+
+        .window-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg-area {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .win-btn {
+            background-color: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            padding: 4px 20px;
+            font-size: 11px;
+            min-width: 70px;
+            cursor: pointer;
+            box-shadow: 1px 1px 0px #000;
+            color: black;
+        }
+        
+        .win-btn:active {
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            transform: translate(1px, 1px);
+        }
+
+        .win-btn.focused {
+            border: 1px solid #000;
+            outline: 1px dotted #000;
+            outline-offset: -4px;
+        }
+
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 0;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f4f4f;
+        }
+    </style>
+</head>
+<body class="w-full h-full text-sm overflow-hidden select-none" vid="7">
+
+    
+    <div class="w-full h-full flex flex-col relative z-0" vid="8">
+        
+        
+        <div class="h-8 bg-[#1e1e1e] flex items-center justify-between px-4 border-b border-[#333]" vid="9">
+            <div class="flex items-center gap-2" vid="10">
+                <div class="flex gap-2 opacity-50" vid="11">
+                   <div class="w-3 h-3 rounded-full bg-red-500" vid="12"></div>
+                   <div class="w-3 h-3 rounded-full bg-yellow-500" vid="13"></div>
+                   <div class="w-3 h-3 rounded-full bg-green-500" vid="14"></div>
+                </div>
+            </div>
+            <div class="text-[#808080] text-xs font-sans" vid="15">project / REY</div>
+            <div class="flex gap-2" vid="16"></div>
+        </div>
+
+        
+        <div class="h-9 bg-[#1e1e1e] flex items-end px-2 gap-1" vid="17">
+            <div class="bg-[#0d1117] text-[#a9b7c6] px-4 py-2 text-xs flex items-center gap-2 rounded-t-lg border-t-2 border-l border-r border-blue-500/0 relative" vid="18">
+                <span class="text-pink-500" vid="19">♥</span> status.js
+                <span class="ml-2 text-xs cursor-pointer hover:text-white" vid="20">×</span>
+                <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500" vid="21"></div>
+            </div>
+            <div class="text-[#808080] px-3 py-2 text-xs cursor-pointer hover:text-white" vid="22">+</div>
+        </div>
+
+        
+        <div class="flex-1 bg-[#0d1117] flex overflow-hidden relative" vid="23">
+            
+            
+            <div class="w-12 py-4 flex flex-col items-end pr-4 text-[#4b5059] text-xs leading-6 select-none border-r border-[#1e1e1e] font-mono" vid="24">
+                <div vid="25">10</div><div vid="26">11</div><div vid="27">12</div><div vid="28">13</div><div vid="29">14</div><div vid="30">15</div><div vid="31">16</div><div vid="32">17</div><div vid="33">18</div><div vid="34">19</div><div vid="35">20</div><div vid="36">21</div><div vid="37">22</div><div vid="38">23</div><div vid="39">24</div><div vid="40">25</div><div vid="41">26</div><div vid="42">27</div><div vid="43">28</div><div vid="44">29</div><div vid="45">30</div><div vid="46">31</div><div vid="47">32</div><div vid="48">33</div><div vid="49">34</div><div vid="50">35</div><div vid="51">36</div><div vid="52">37</div>
+            </div>
+
+            
+            <div class="flex-1 p-4 text-xs leading-6 font-mono text-[#a9b7c6] overflow-auto" vid="53">
+                <div class="pl-8" vid="54"><span class="c-prop" vid="55">sistah</span>: <span class="c-string" vid="56">"Regan"</span></div>
+                <div vid="57">&nbsp;&nbsp;&nbsp;&nbsp;};</div>
+                <br vid="58">
+                <div vid="59"><span class="c-keyword" vid="60">const</span> <span class="c-def" vid="61">WHY_I_LOVE_YOU</span> = {</div>
+                <div vid="62">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="63">humor</span>: <span class="c-string" vid="64">"unmatched"</span>,</div>
+                <div vid="65">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="66">honesty</span>: <span class="c-string" vid="67">"always real"</span>,</div>
+                <div vid="68">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="69">heart</span>: <span class="c-string" vid="70">"biggest I know"</span>,</div>
+                <div vid="71">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="72">brain</span>: <span class="c-string" vid="73">"literally genius"</span>,</div>
+                <div vid="74">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="75">loyalty</span>: <span class="c-string" vid="76">"ride or die"</span>,</div>
+                <div vid="77">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="78">facetimes</span>: <span class="c-string" vid="79">"never long enough"</span>,</div>
+                <div vid="80">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="81">advice</span>: <span class="c-string" vid="82">"always right"</span>,</div>
+                <div vid="83">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="84">bond</span>: <span class="c-string" vid="85">"unbreakable"</span></div>
+                <div vid="86">};</div>
+                <br vid="87">
+                <div vid="88"><span class="c-keyword" vid="89">const</span> <span class="c-def" vid="90">feelings</span> = {</div>
+                <div vid="91">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="92">level</span>: <span class="c-num" vid="93">100</span>,</div>
+                <div vid="94">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="95">status</span>: <span class="c-string" vid="96">"HAPPY"</span>,</div>
+                <div vid="97">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-prop" vid="98">commitment</span>: <span class="c-string" vid="99">"ALL_IN"</span></div>
+                <div vid="100">};</div>
+                <br vid="101">
+                <div vid="102"><span class="c-keyword" vid="103">if</span> (feelings.<span class="c-prop" vid="104">status</span> === <span class="c-string" vid="105">"HAPPY"</span>) {</div>
+                <div vid="106">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-comment" vid="107">// best sissy ever</span></div>
+                <div vid="108">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-comment" vid="109">// regano cheese</span></div>
+                <div vid="110">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-keyword" vid="111">return</span> <span class="c-string" vid="112">"I love you sissy"</span>;</div>
+                <div vid="113">}</div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="windows-container" vid="114">
+        
+        <div class="error-window" vid="115">
+            <div class="window-inner" vid="116"><div class="title-bar" vid="117"><span vid="118">System Error</span><button class="close-btn" vid="119">×</button></div><div class="window-content" vid="120"><div class="msg-area" vid="121"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="122"><svg viewBox="0 0 32 32" class="w-8 h-8" vid="123"><path fill="#c83e4e" d="M16 28c-.5 0-1-.2-1.3-.6-2.8-2.9-5.3-5.4-7.2-7.7C5.3 17.1 4 14.8 4 12.5 4 9.5 6.5 7 9.5 7c1.5 0 2.9.6 4 1.6.5.5.9 1 1.2 1.6.3-.6.7-1.1 1.2-1.6 1.1-1 2.5-1.6 4-1.6 3 0 5.5 2.5 5.5 5.5 0 2.3-1.3 4.6-3.5 7.2-1.9 2.3-4.4 4.8-7.2 7.7-.3.4-.8.6-1.3.6z" vid="124"></path><path fill="#a02f3a" d="M12 10c-.3.8-.5 1.6-.5 2.5 0 1.8.8 3.5 2 4.8.8.8 1.7 1.4 2.5 2-.5-.3-1-.7-1.5-1.2-1.5-1.5-2.5-3.5-2.5-5.6 0-1-.2-2-.5-2.9-.3.1-.3.2-.5.4z" vid="125"></path><path fill="#8b2735" d="M19.5 7c-1.2 0-2.3.4-3.2 1.1.2.3.3.6.5.9.6-.4 1.3-.7 2-.7.9 0 1.8.3 2.5.9-.3-.8-.8-1.5-1.5-2.1-.1-.1-.2-.1-.3-.1z" vid="126"></path><ellipse fill="#6b1e2a" cx="10" cy="13" rx="1.5" ry="2" vid="127"></ellipse><path fill="#e04f5f" d="M16 26.5c2.5-2.6 4.8-4.9 6.5-7 2-2.4 3.2-4.5 3.2-6.8 0-2.6-2.1-4.7-4.7-4.7-1.3 0-2.5.5-3.4 1.4-.6.6-1 1.3-1.3 2-.3-.7-.7-1.4-1.3-2-.9-.9-2.1-1.4-3.4-1.4-2.6 0-4.7 2.1-4.7 4.7 0 2.3 1.2 4.4 3.2 6.8 1.7 2.1 4 4.4 6.5 7 .1.1.2.1.2.1.1 0 .1 0 .2-.1z" vid="128"></path><path fill="#c83e4e" d="M13 11.5c0-.8.2-1.5.5-2.2-1.2.4-2.2 1.3-2.8 2.5-.2.4-.3.9-.3 1.4 0 1.4.6 2.7 1.5 3.7.5-1.2.8-2.5.8-3.9 0-.5.1-1 .3-1.5z" vid="129"></path><ellipse fill="#8b2735" cx="20" cy="12" rx="1" ry="1.5" vid="130"></ellipse></svg></div><div class="text-[11px] text-black" vid="131">Sistaaaa<br vid="132">forever.</div></div><div class="btn-row" vid="133"><button class="win-btn focused" vid="134">OK</button><button class="win-btn" vid="135">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="136">
+            <div class="window-inner" vid="137"><div class="title-bar" vid="138"><span vid="139">System Error</span><button class="close-btn" vid="140">×</button></div><div class="window-content" vid="141"><div class="msg-area" vid="142"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="143"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="144"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="145"></path></svg></div><div class="text-[11px] text-black" vid="146">Long distance<br vid="147">can't touch us.</div></div><div class="btn-row" vid="148"><button class="win-btn focused" vid="149">OK</button><button class="win-btn" vid="150">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="151">
+            <div class="window-inner" vid="152"><div class="title-bar" vid="153"><span vid="154">System Error</span><button class="close-btn" vid="155">×</button></div><div class="window-content" vid="156"><div class="msg-area" vid="157"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="158"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="159"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="160"></path></svg></div><div class="text-[11px] text-black" vid="161">You get me more<br vid="162">than anyone.</div></div><div class="btn-row" vid="163"><button class="win-btn focused" vid="164">OK</button><button class="win-btn" vid="165">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="166">
+            <div class="window-inner" vid="167"><div class="title-bar" vid="168"><span vid="169">System Error</span><button class="close-btn" vid="170">×</button></div><div class="window-content" vid="171"><div class="msg-area" vid="172"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="173"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="174"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="175"></path></svg></div><div class="text-[11px] text-black" vid="176">You're so<br vid="177">insanely smart.</div></div><div class="btn-row" vid="178"><button class="win-btn focused" vid="179">OK</button><button class="win-btn" vid="180">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="181">
+            <div class="window-inner" vid="182"><div class="title-bar" vid="183"><span vid="184">System Error</span><button class="close-btn" vid="185">×</button></div><div class="window-content" vid="186"><div class="msg-area" vid="187"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="188"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="189"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="190"></path></svg></div><div class="text-[11px] text-black" vid="191">Kind to<br vid="192">your core.</div></div><div class="btn-row" vid="193"><button class="win-btn focused" vid="194">OK</button><button class="win-btn" vid="195">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="196">
+            <div class="window-inner" vid="197"><div class="title-bar" vid="198"><span vid="199">System Error</span><button class="close-btn" vid="200">×</button></div><div class="window-content" vid="201"><div class="msg-area" vid="202"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="203"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="204"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="205"></path></svg></div><div class="text-[11px] text-black" vid="206">Loving in the<br vid="207">realest way.</div></div><div class="btn-row" vid="208"><button class="win-btn focused" vid="209">OK</button><button class="win-btn" vid="210">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="211">
+            <div class="window-inner" vid="212"><div class="title-bar" vid="213"><span vid="214">System Error</span><button class="close-btn" vid="215">×</button></div><div class="window-content" vid="216"><div class="msg-area" vid="217"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="218"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="219"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="220"></path></svg></div><div class="text-[11px] text-black" vid="221">Grey Rice Krispies<br vid="222">legends.</div></div><div class="btn-row" vid="223"><button class="win-btn focused" vid="224">OK</button><button class="win-btn" vid="225">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="226">
+            <div class="window-inner" vid="227"><div class="title-bar" vid="228"><span vid="229">System Error</span><button class="close-btn" vid="230">×</button></div><div class="window-content" vid="231"><div class="msg-area" vid="232"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="233"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="234"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="235"></path></svg></div><div class="text-[11px] text-black" vid="236">Your drunk FaceTimes<br vid="237">are elite.</div></div><div class="btn-row" vid="238"><button class="win-btn focused" vid="239">OK</button><button class="win-btn" vid="240">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="241">
+            <div class="window-inner" vid="242"><div class="title-bar" vid="243"><span vid="244">System Error</span><button class="close-btn" vid="245">×</button></div><div class="window-content" vid="246"><div class="msg-area" vid="247"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="248"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="249"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="250"></path></svg></div><div class="text-[11px] text-black" vid="251">Built-in<br vid="252">best friend.</div></div><div class="btn-row" vid="253"><button class="win-btn focused" vid="254">OK</button><button class="win-btn" vid="255">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="256">
+            <div class="window-inner" vid="257"><div class="title-bar" vid="258"><span vid="259">System Error</span><button class="close-btn" vid="260">×</button></div><div class="window-content" vid="261"><div class="msg-area" vid="262"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="263"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="264"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="265"></path></svg></div><div class="text-[11px] text-black" vid="266">Same humor,<br vid="267">same brain.</div></div><div class="btn-row" vid="268"><button class="win-btn focused" vid="269">OK</button><button class="win-btn" vid="270">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="271">
+            <div class="window-inner" vid="272"><div class="title-bar" vid="273"><span vid="274">System Error</span><button class="close-btn" vid="275">×</button></div><div class="window-content" vid="276"><div class="msg-area" vid="277"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="278"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="279"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="280"></path></svg></div><div class="text-[11px] text-black" vid="281">You always know<br vid="282">what I mean.</div></div><div class="btn-row" vid="283"><button class="win-btn focused" vid="284">OK</button><button class="win-btn" vid="285">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="286">
+            <div class="window-inner" vid="287"><div class="title-bar" vid="288"><span vid="289">System Error</span><button class="close-btn" vid="290">×</button></div><div class="window-content" vid="291"><div class="msg-area" vid="292"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="293"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="294"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="295"></path></svg></div><div class="text-[11px] text-black" vid="296">My safe call,<br vid="297">anytime.</div></div><div class="btn-row" vid="298"><button class="win-btn focused" vid="299">OK</button><button class="win-btn" vid="300">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="301">
+            <div class="window-inner" vid="302"><div class="title-bar" vid="303"><span vid="304">System Error</span><button class="close-btn" vid="305">×</button></div><div class="window-content" vid="306"><div class="msg-area" vid="307"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="308"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="309"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="310"></path></svg></div><div class="text-[11px] text-black" vid="311">No one hypes me<br vid="312">like you.</div></div><div class="btn-row" vid="313"><button class="win-btn focused" vid="314">OK</button><button class="win-btn" vid="315">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="316">
+            <div class="window-inner" vid="317"><div class="title-bar" vid="318"><span vid="319">System Error</span><button class="close-btn" vid="320">×</button></div><div class="window-content" vid="321"><div class="msg-area" vid="322"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="323"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="324"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="325"></path></svg></div><div class="text-[11px] text-black" vid="326">We survive<br vid="327">everything together.</div></div><div class="btn-row" vid="328"><button class="win-btn focused" vid="329">OK</button><button class="win-btn" vid="330">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="331">
+            <div class="window-inner" vid="332"><div class="title-bar" vid="333"><span vid="334">System Error</span><button class="close-btn" vid="335">×</button></div><div class="window-content" vid="336"><div class="msg-area" vid="337"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="338"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="339"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="340"></path></svg></div><div class="text-[11px] text-black" vid="341">You give the<br vid="342">best advice.</div></div><div class="btn-row" vid="343"><button class="win-btn focused" vid="344">OK</button><button class="win-btn" vid="345">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="346">
+            <div class="window-inner" vid="347"><div class="title-bar" vid="348"><span vid="349">System Error</span><button class="close-btn" vid="350">×</button></div><div class="window-content" vid="351"><div class="msg-area" vid="352"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="353"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="354"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="355"></path></svg></div><div class="text-[11px] text-black" vid="356">You tell me<br vid="357">the truth.</div></div><div class="btn-row" vid="358"><button class="win-btn focused" vid="359">OK</button><button class="win-btn" vid="360">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="361">
+            <div class="window-inner" vid="362"><div class="title-bar" vid="363"><span vid="364">System Error</span><button class="close-btn" vid="365">×</button></div><div class="window-content" vid="366"><div class="msg-area" vid="367"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="368"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="369"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="370"></path></svg></div><div class="text-[11px] text-black" vid="371">We laugh at the<br vid="372">dumbest things.</div></div><div class="btn-row" vid="373"><button class="win-btn focused" vid="374">OK</button><button class="win-btn" vid="375">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="376">
+            <div class="window-inner" vid="377"><div class="title-bar" vid="378"><span vid="379">System Error</span><button class="close-btn" vid="380">×</button></div><div class="window-content" vid="381"><div class="msg-area" vid="382"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="383"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="384"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="385"></path></svg></div><div class="text-[11px] text-black" vid="386">Our memories<br vid="387">are unmatched.</div></div><div class="btn-row" vid="388"><button class="win-btn focused" vid="389">OK</button><button class="win-btn" vid="390">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="391">
+            <div class="window-inner" vid="392"><div class="title-bar" vid="393"><span vid="394">System Error</span><button class="close-btn" vid="395">×</button></div><div class="window-content" vid="396"><div class="msg-area" vid="397"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="398"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="399"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="400"></path></svg></div><div class="text-[11px] text-black" vid="401">I trust you<br vid="402">with everything.</div></div><div class="btn-row" vid="403"><button class="win-btn focused" vid="404">OK</button><button class="win-btn" vid="405">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="406">
+            <div class="window-inner" vid="407"><div class="title-bar" vid="408"><span vid="409">System Error</span><button class="close-btn" vid="410">×</button></div><div class="window-content" vid="411"><div class="msg-area" vid="412"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="413"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="414"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="415"></path></svg></div><div class="text-[11px] text-black" vid="416">You make hard<br vid="417">days lighter.</div></div><div class="btn-row" vid="418"><button class="win-btn focused" vid="419">OK</button><button class="win-btn" vid="420">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="421">
+            <div class="window-inner" vid="422"><div class="title-bar" vid="423"><span vid="424">System Error</span><button class="close-btn" vid="425">×</button></div><div class="window-content" vid="426"><div class="msg-area" vid="427"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="428"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="429"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="430"></path></svg></div><div class="text-[11px] text-black" vid="431">You're strong in<br vid="432">quiet ways.</div></div><div class="btn-row" vid="433"><button class="win-btn focused" vid="434">OK</button><button class="win-btn" vid="435">CANCEL</button></div></div></div>
+        </div>
+        
+        
+        <div class="error-window" vid="436">
+            <div class="window-inner" vid="437"><div class="title-bar" vid="438"><span vid="439">System Error</span><button class="close-btn" vid="440">×</button></div><div class="window-content" vid="441"><div class="msg-area" vid="442"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="443"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="444"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="445"></path></svg></div><div class="text-[11px] text-black" vid="446">You care<br vid="447">so deeply.</div></div><div class="btn-row" vid="448"><button class="win-btn focused" vid="449">OK</button><button class="win-btn" vid="450">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="451">
+            <div class="window-inner" vid="452"><div class="title-bar" vid="453"><span vid="454">System Error</span><button class="close-btn" vid="455">×</button></div><div class="window-content" vid="456"><div class="msg-area" vid="457"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="458"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="459"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="460"></path></svg></div><div class="text-[11px] text-black" vid="461">You're protective in<br vid="462">the sweetest way.</div></div><div class="btn-row" vid="463"><button class="win-btn focused" vid="464">OK</button><button class="win-btn" vid="465">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="466">
+            <div class="window-inner" vid="467"><div class="title-bar" vid="468"><span vid="469">System Error</span><button class="close-btn" vid="470">×</button></div><div class="window-content" vid="471"><div class="msg-area" vid="472"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="473"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="474"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="475"></path></svg></div><div class="text-[11px] text-black" vid="476">We can talk<br vid="477">for hours.</div></div><div class="btn-row" vid="478"><button class="win-btn focused" vid="479">OK</button><button class="win-btn" vid="480">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="481">
+            <div class="window-inner" vid="482"><div class="title-bar" vid="483"><span vid="484">System Error</span><button class="close-btn" vid="485">×</button></div><div class="window-content" vid="486"><div class="msg-area" vid="487"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="488"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="489"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="490"></path></svg></div><div class="text-[11px] text-black" vid="491">Even miles apart,<br vid="492">you feel close.</div></div><div class="btn-row" vid="493"><button class="win-btn focused" vid="494">OK</button><button class="win-btn" vid="495">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="496">
+            <div class="window-inner" vid="497"><div class="title-bar" vid="498"><span vid="499">System Error</span><button class="close-btn" vid="500">×</button></div><div class="window-content" vid="501"><div class="msg-area" vid="502"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="503"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="504"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="505"></path></svg></div><div class="text-[11px] text-black" vid="506">Forever my sister,<br vid="507">forever my friend.</div></div><div class="btn-row" vid="508"><button class="win-btn focused" vid="509">OK</button><button class="win-btn" vid="510">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="511">
+            <div class="window-inner" vid="512"><div class="title-bar" vid="513"><span vid="514">System Error</span><button class="close-btn" vid="515">×</button></div><div class="window-content" vid="516"><div class="msg-area" vid="517"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="518"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="519"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="520"></path></svg></div><div class="text-[11px] text-black" vid="521">I'm so proud to<br vid="522">be your sister.</div></div><div class="btn-row" vid="523"><button class="win-btn focused" vid="524">OK</button><button class="win-btn" vid="525">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="526">
+            <div class="window-inner" vid="527"><div class="title-bar" vid="528"><span vid="529">System Error</span><button class="close-btn" vid="530">×</button></div><div class="window-content" vid="531"><div class="msg-area" vid="532"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="533"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="534"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="535"></path></svg></div><div class="text-[11px] text-black" vid="536">You understand<br vid="537">the family lore.</div></div><div class="btn-row" vid="538"><button class="win-btn focused" vid="539">OK</button><button class="win-btn" vid="540">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="541">
+            <div class="window-inner" vid="542"><div class="title-bar" vid="543"><span vid="544">System Error</span><button class="close-btn" vid="545">×</button></div><div class="window-content" vid="546"><div class="msg-area" vid="547"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="548"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="549"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="550"></path></svg></div><div class="text-[11px] text-black" vid="551">You make<br vid="552">holidays better.</div></div><div class="btn-row" vid="553"><button class="win-btn focused" vid="554">OK</button><button class="win-btn" vid="555">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="556">
+            <div class="window-inner" vid="557"><div class="title-bar" vid="558"><span vid="559">System Error</span><button class="close-btn" vid="560">×</button></div><div class="window-content" vid="561"><div class="msg-area" vid="562"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="563"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="564"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="565"></path></svg></div><div class="text-[11px] text-black" vid="566">We've grown up together<br vid="567">in every way.</div></div><div class="btn-row" vid="568"><button class="win-btn focused" vid="569">OK</button><button class="win-btn" vid="570">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" vid="571">
+            <div class="window-inner" vid="572"><div class="title-bar" vid="573"><span vid="574">System Error</span><button class="close-btn" vid="575">×</button></div><div class="window-content" vid="576"><div class="msg-area" vid="577"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="578"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="579"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="580"></path></svg></div><div class="text-[11px] text-black" vid="581">Life is better<br vid="582">with you in it.</div></div><div class="btn-row" vid="583"><button class="win-btn focused" vid="584">OK</button><button class="win-btn" vid="585">CANCEL</button></div></div></div>
+        </div>
+
+        
+        <div class="error-window" style="z-index: 50;" vid="586">
+            <div class="window-inner" vid="587"><div class="title-bar" vid="588"><span vid="589">System Error</span><button class="close-btn" vid="590">×</button></div><div class="window-content" vid="591"><div class="msg-area" vid="592"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center" vid="593"><svg viewBox="0 0 24 24" class="w-8 h-8" vid="594"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));" vid="595"></path></svg></div><div class="text-[11px] text-black" vid="596">Love you more than<br vid="597">words, sistaaaa 💛</div></div><div class="btn-row" vid="598"><button class="win-btn focused" vid="599">OK</button><button class="win-btn" vid="600">CANCEL</button></div></div></div>
+        </div>
+
+    </div>
+
+    <!-- Spotify Player -->
+    <div style="position: fixed; bottom: 12px; right: 12px; z-index: 9999; opacity: 0.85;">
+        <iframe style="border-radius: 12px;" src="https://open.spotify.com/embed/track/00fOU4tBwMxgRNnefm1pfo?utm_source=generator&theme=0" width="300" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+
+    <script vid="601">
+        
+        
+        
+        
+
+        function arrangeWindows() {
+            const windows = document.querySelectorAll('.error-window');
+            const total = windows.length;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2 - 50; 
+            const scale = 20; 
+
+            windows.forEach((win, index) => {
+                
+                
+                
+                const t = (index / total) * Math.PI * 2;
+
+                const xRaw = 16 * Math.pow(Math.sin(t), 3);
+                const yRaw = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+
+                
+                
+                const winWidth = 280;
+                
+                
+                const x = centerX + (xRaw * scale) - (winWidth / 2);
+                const y = centerY - (yRaw * scale) - 50; 
+
+                win.style.left = x + 'px';
+                win.style.top = y + 'px';
+                
+                
+                win.style.zIndex = 10 + index;
+                
+
+            });
+        }
+
+        
+        let isDragging = false;
+        let currentWindow = null;
+        let offsetX = 0;
+        let offsetY = 0;
+        let maxZ = 100;
+
+        function initDrag() {
+            document.querySelectorAll('.error-window').forEach(win => {
+                const titleBar = win.querySelector('.title-bar');
+                titleBar.style.cursor = 'move';
+                
+                win.addEventListener('mousedown', () => {
+                    
+                    maxZ++;
+                    win.style.zIndex = maxZ;
+                });
+
+                titleBar.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('close-btn')) return;
+                    isDragging = true;
+                    currentWindow = win;
+                    const rect = win.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    maxZ++;
+                    win.style.zIndex = maxZ;
+                });
+                
+                
+                const closeBtn = win.querySelector('.close-btn');
+                if(closeBtn) {
+                    closeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        win.style.display = 'none';
+                    });
+                }
+                
+                const cancelBtn = win.querySelectorAll('.win-btn')[1];
+                if(cancelBtn) {
+                    cancelBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        win.style.display = 'none';
+                    });
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging || !currentWindow) return;
+                const x = e.clientX - offsetX;
+                const y = e.clientY - offsetY;
+                currentWindow.style.left = x + 'px';
+                currentWindow.style.top = y + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                currentWindow = null;
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            arrangeWindows();
+            initDrag();
+            
+            
+            window.addEventListener('resize', arrangeWindows);
+        });
+    </script>
+
+</body></html>
