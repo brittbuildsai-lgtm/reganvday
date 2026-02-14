@@ -387,6 +387,11 @@
 
     </div>
 
+    <!-- Spotify Prompt Pop-up -->
+    <div id="spotify-prompt" class="error-window" style="z-index: 10000; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="window-inner"><div class="title-bar"><span>🎵 Before You Start</span><button class="close-btn" onclick="document.getElementById('spotify-prompt').style.display='none'">×</button></div><div class="window-content"><div class="msg-area"><div class="w-8 h-8 flex-shrink-0 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-8 h-8"><path fill="#e04f5f" stroke="#c83e4e" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));"></path></svg></div><div class="text-[11px] text-black">Press play on the Spotify<br>player in the corner! 🎶</div></div><div class="btn-row"><button class="win-btn focused" onclick="document.getElementById('spotify-prompt').style.display='none'">OK</button></div></div></div>
+    </div>
+
     <!-- Spotify Player -->
     <div style="position: fixed; bottom: 12px; right: 12px; z-index: 9999; opacity: 0.85;">
         <iframe style="border-radius: 12px;" src="https://open.spotify.com/embed/track/00fOU4tBwMxgRNnefm1pfo?utm_source=generator&theme=0" width="300" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
